@@ -1,0 +1,49 @@
+services:
+  sandbox-nginx:
+    image: nginx:latest
+    container_name: sandbox-nginx
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./src:/var/www/html
+    depends_on:
+      - sandbox-php
+    networks:
+      - sandbox-net
+
+  sandbox-php:
+    build: ./php
+    container_name: sandbox-php
+    volumes:
+      - ./src:/var/www/html
+    networks:
+      - sandbox-net
+
+  sandbox-mysql:
+    image: mysql:8.0
+    container_name: sandbox-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: sandbox_db
+      MYSQL_USER: sandbox
+      MYSQL_PASSWORD: sandboxpass
+      TZ: Asia/Bangkok
+    command:
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3307:3306"
+    volumes:
+      - sandbox-dbdata:/var/lib/mysql
+    networks:
+      - sandbox-net
+
+volumes:
+  sandbox-dbdata:
+
+networks:
+  sandbox-net:
+    driver: bridge
