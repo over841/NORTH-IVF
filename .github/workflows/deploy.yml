@@ -21,8 +21,14 @@ jobs:
 
       - name: Deploy to Server
         run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          ssh root@206.189.94.235 << 'EOF'
             cd /var/www/sandbox-system
             git pull origin main
             docker-compose up -d --build
           EOF
+
+
+      - name: Debug Host
+        run: |
+          echo "HOST=${{ secrets.SERVER_HOST }}"
+
